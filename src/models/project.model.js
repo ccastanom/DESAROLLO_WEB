@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize"); // Importamos los tipos de datos de Sequelize
 const sequelize = require("../config/database"); // Importamos la instancia de conexión a la base de datos
+const User = require("./user.model");
 
 // Definición del modelo "Proyect" que representa la tabla "proyectos"
 const Proyect = sequelize.define(
@@ -27,5 +28,14 @@ const Proyect = sequelize.define(
     },
   }
 );
+
+Project.belongsTo(User, {
+  foreignKey: "administrador_id",
+});
+
+User.hasMany(Project, {
+  foreignKey: "administrador_id",
+  as: "proyectos_administrados",
+});
 
 module.exports = Proyect; // Exporta el modelo para su uso en otras partes del código

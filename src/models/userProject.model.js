@@ -1,29 +1,41 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../config/db");
+const sequelize = require("../config/database");
+const User = require("./user.model");
+const Project = require("./project.model");
 
-
-// Definición del modelo "UserProject" que representa la tabla intermedia "usuarios_proyectos"
 const UserProject = sequelize.define(
-  "usuarios_proyectos", // Nombre del modelo
+  "usuarios_proyecto",
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     usuario_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: { model: "usuarios", key: "id" },  // Define la clave foránea que referencia a "usuarios"
-      foreignKey: "usuario_id", // Nombre de la clave foránea en la tabla
+      references: { model: "usuarios", key: "id" },
+      foreignKey: "usuario_id",
     },
     proyecto_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: { model: "proyectos", key: "id" }, // Define la clave foránea que referencia a "proyectos"
-      foreignKey: "proyecto_id", // Nombre de la clave foránea en la tabla
+      references: { model: "proyectos", key: "id" },
+      foreignKey: "proyecto_id",
     },
   },
   {
     timestamps: false,
-    tableName: "usuarios_proyectos",
+    tableName: "usuarios_proyecto",
   }
 );
+
+User.belongsToMany(Project, {
+  through: UserProject,
+  foreignKey: "usuario_id",
+  as: "proyectos",
+});
+
+Project.belongsToMany(User, {
+  through: UserProject,
+  foreignKey: "proyecto_id",
+  as: "usuarios",
+});
 
 module.exports = UserProject;

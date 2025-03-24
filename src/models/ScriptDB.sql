@@ -48,4 +48,8 @@ foreign key (permiso_id) references permisos(id) on delete cascade,
 unique(rol_id, permiso_id)
 );
 
-insert into permisos (nombre) values('crear'), ('visualizar'), ('actualizar'), ('eliminar');
+-- Inserción de permisos
+insert into permisos (nombre) values('crear'), ('visualizar'), ('actualizar'), ('eliminar');
+
+-- Inserción de roles
+INSERT INTO roles (nombre) VALUES ('admin');
