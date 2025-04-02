@@ -7,7 +7,7 @@ router.post('/auth/login', authController.login);  // Definimos la ruta para el 
 // Cuando un usuario haga una solicitud POST a "/auth/login", se ejecutará la función "login" del controlador
 
 
-moduler.exports = router;
+module.exports = router;
 
 
 //definimos la ruta que vamos a utilizar para la autenticación de usuarios 

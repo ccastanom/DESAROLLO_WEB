@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotev");
+const dotenv = require("dotenv");
 dotenv.config();
 
 const SECRET_KEY = process.env.JWT_SECRET;
@@ -7,8 +7,8 @@ const SECRET_KEY = process.env.JWT_SECRET;
 const authenticateToken = (req, res, next) => {
     const token = req.header("Authorization")?.split(" ")[1];
 
-    if(!tokeb) {
-        return res.status(401).json({ message: "Acceso denegado, no se proporcino un tolen"});
+    if(!token) {
+        return res.status(401).json({ message: "Acceso denegado, no se proporcino un token"});
     }
 
     jwt.verify(token, SECRET_KEY, (err, user) => {
@@ -16,7 +16,9 @@ const authenticateToken = (req, res, next) => {
             return res.status(403).json({ message: "Token no valido"});
         }
         req.user = user;
+        next()
     });
+    console.log("Token validado")
 };
 
 const checkRole = (roles) => {
@@ -28,6 +30,6 @@ const checkRole = (roles) => {
         }
         next();
     };
-    module.exports = { authenticateToken, checkRole };
-
+    
 };
+module.exports = { authenticateToken, checkRole };

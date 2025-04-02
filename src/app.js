@@ -1,6 +1,6 @@
 //Este código configura un servidor con Express.js y habilita CORS para manejar solicitudes desde otros dominios
 
-const express = require ('express');
+const express = require('express');
 const cors = require('cors');
 const app = express();
 
@@ -10,7 +10,7 @@ app.use(cors());// Habilita CORS para permitir peticiones de otros dominios
 //Importancion de rutas
 //La carpeta de rutas se debe llamar tal cual: userRoutes, authRoutes, projectRoutes
 
-const userRoutes = require('./roures/user.routes');
+const userRoutes = require('./routes/user.routes');
 const authRoutes = require('./routes/auth.routes');
 const projectRoutes = require('./routes/project.routes');
 

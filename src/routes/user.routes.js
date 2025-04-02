@@ -2,7 +2,7 @@
 
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/user.controllers");
+const userController = require("../controllers/user.controller");
 const {
   authenticateToken,
   checkRole,
@@ -16,7 +16,7 @@ router.post(
   "/users/create",
   authenticateToken,
   checkRole([ROLES.ADMIN]),
-  userController.createUser
+  userController.createUser 
 );
 
 router.put(

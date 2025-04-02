@@ -28,8 +28,23 @@ exports.createUser = async (req, res) => {
 };
 
 // Función sin implementación (posible error o código incompleto)
-exports.updateuser = async (req, res) => {
+exports.updateUser = async (req, res) => {
   const { id } = req.params;
+  const { nombre, email, rol_id, administrador_id } = req.body;
+  const admin_from_token = req.user.id;
+  try {
+    const user = await userService.updateUser(
+      id,
+      nombre,
+      email,
+      rol_id,
+      administrador_id,
+      admin_from_token
+    );
+    res.status(200).json({ message: "usuario actualizado con exito", user });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 // Obtiene todos los usuarios asociados a un administrador específico
@@ -66,28 +81,12 @@ exports.getAllUserByRolId = async (req, res) => {
   }
 };
 
-// Actualiza los datos de un usuario existente
-exports.updateUser = async (req, res) => {
-  const { id } = req.params; // Obtiene el ID del usuario a actualizar
-  const { nombre, email, rol_id, administrador_id } = req.body; // Datos a actualizar
-  const admin_from_token = req.user.id; // Obtiene el ID del administrador autenticado
-
+exports.getUserById = async (req, res) => {
   try {
-    // Llama al servicio para actualizar los datos del usuario
-    const user = await userService.updateuser(
-      id,
-      nombre,
-      email,
-      rol_id,
-      administrador_id,
-      admin_from_token
-    );
-
-    // Responde con un estado 200 (éxito) y devuelve el usuario actualizado
-    res.status(200).json({ message: "usuario actualizado con exito", user });
-  } catch (err) {
-    // Manejo de errores en caso de falla en la actualización
-    res.status(500).json({ message: err.message });
+    const user = await userService.getUserById(req.params.id);
+    res.status(200).json({ message: "Usuario consultado con exito", user });
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener el usuario", error });
   }
 };
 

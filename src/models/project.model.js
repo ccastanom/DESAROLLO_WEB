@@ -3,7 +3,7 @@ const sequelize = require("../config/database"); // Importamos la instancia de c
 const User = require("./user.model");
 
 // Definición del modelo "Proyect" que representa la tabla "proyectos"
-const Proyect = sequelize.define(
+const Project = sequelize.define(
   "proyectos", // Nombre de la tabla en la base de datos
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true }, /* / Define el campo como un número entero, indica que es la clave primaria de la tabla  y el valor se incrementa automáticamente*/
@@ -38,4 +38,4 @@ User.hasMany(Project, {
   as: "proyectos_administrados",
 });
 
-module.exports = Proyect; // Exporta el modelo para su uso en otras partes del código
+module.exports = Project; // Exporta el modelo para su uso en otras partes del código
