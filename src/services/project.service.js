@@ -13,6 +13,7 @@ exports.createProject = async (data) => {
     });
     return newProject;
   } catch (error) {
+    console.log(error)
     throw error;
   }
 };

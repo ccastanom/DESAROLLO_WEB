@@ -12,6 +12,8 @@ const errorHandler = require("../middlewares/error.middleware");
 
 //Ruta de usuarios
 
+// 1. Crear usuario (solo admin)
+
 router.post(
   "/users/create",
   authenticateToken,
@@ -35,7 +37,7 @@ router.get(
 router.delete(
   "/users/delete/:id",
   authenticateToken,
-  checkRole([ROLES.ADMIN]),
+  checkRole([ROLES.ADMIN]), // Solo usuarios con rol ADMIN pueden eliminar
   userController.deleteUser
 );
 router.get(

@@ -97,7 +97,7 @@ exports.deleteUser = async (req, res) => {
 
   try {
     // Llama al servicio para eliminar el usuario
-    const result = await userService.deletUser(id, admin_from_token);
+    const result = await userService.deleteUser(id, admin_from_token);
 
     // Responde con un estado 200 (éxito) y confirma la eliminación
     res.status(200).json(result);

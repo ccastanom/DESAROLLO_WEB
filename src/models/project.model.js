@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize"); // Importamos los tipos de datos de 
 const sequelize = require("../config/database"); // Importamos la instancia de conexión a la base de datos
 const User = require("./user.model");
 
-// Definición del modelo "Proyect" que representa la tabla "proyectos"
+// Definición del modelo "Project" que representa la tabla "proyectos"
 const Project = sequelize.define(
   "proyectos", // Nombre de la tabla en la base de datos
   {
@@ -22,7 +22,7 @@ const Project = sequelize.define(
     hooks: {
       afterCreate: (proyect, options) => { // Se ejecuta después de crear un proyecto
         if (proyect.fecha_creacion) {
-          proyect.fecha_creacion.setHours(proyect.fecha_creación.getHous() - 5);
+          proyect.fecha_creacion.setHours(proyect.fecha_creacion.getHours() - 5);
         }
       },
     },

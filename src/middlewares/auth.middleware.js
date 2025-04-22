@@ -18,7 +18,6 @@ const authenticateToken = (req, res, next) => {
         req.user = user;
         next()
     });
-    console.log("Token validado")
 };
 
 const checkRole = (roles) => {

@@ -118,6 +118,7 @@ exports.updateUser = async (
 };
 
 // Esta función nos ayuda a eliminar un usuario de la base de datos.
+
 exports.deleteUser = async (id, admin_from_token) => {
   try {
      // Buscamos el usuario por su ID.
@@ -126,7 +127,7 @@ exports.deleteUser = async (id, admin_from_token) => {
     // Verificamos que el usuario pertenece al administrador que hace la solicitud.
     if (user.administrador_id !== admin_from_token) {
       throw new Error(
-        "Accesoo denegado, este usuario no esta bajo su administracion"
+        "Acceso denegado, este usuario no esta bajo su administracion"
       );
     }
 
