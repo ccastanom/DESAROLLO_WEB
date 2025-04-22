@@ -43,7 +43,7 @@ exports.loginUser = async (email, password) => {
         permisos,
       },
       SECRET_KEY,
-      { expiresIn: "12h" } /*El token expira en 1 hora */
+      { expiresIn: "12h" } /*El token expirará en 12 horas */
     );
 
     return token;
