@@ -29,7 +29,7 @@ router.put(
 );
 
 router.get(
-  "/users/roles/:id",
+  "/users/rol/:id",
   authenticateToken,
   checkRole([ROLES.ADMIN]),
   userController.getAllUserByRolId
@@ -45,6 +45,13 @@ router.get(
   authenticateToken,
   checkRole([ROLES.ADMIN]),
   userController.getUserById
+);
+
+router.get(
+  "/users",
+  authenticateToken,
+  checkRole([ROLES.ADMIN]),
+  userController.getAllUserByAdministradorId
 );
 
 //middleaware para  manejar errores
