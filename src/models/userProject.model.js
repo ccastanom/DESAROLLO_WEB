@@ -3,7 +3,6 @@ const sequelize = require("../config/database");
 const User = require("./user.model");
 const Project = require("./project.model");
 
-
 // Define la tabla intermedia "usuarios_proyecto" para la relación muchos a muchos
 const UserProject = sequelize.define(
   "usuarios_proyecto",
@@ -13,18 +12,16 @@ const UserProject = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: { model: "usuarios", key: "id" },
-      foreignKey: "usuario_id",
     },
     proyecto_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: { model: "proyectos", key: "id" },
-      foreignKey: "proyecto_id",
     },
   },
   {
-    timestamps: false,  // desactiva los campos createdAt y updatedAt
-    tableName: "usuarios_proyecto",  // nombre explícito de la tabla
+    timestamps: false,
+    tableName: "usuarios_proyecto",
   }
 );
 
@@ -35,7 +32,7 @@ User.belongsToMany(Project, {
   as: "proyectos",
 });
 
-//un proyecto puede tener muchos usuarios
+// Un proyecto puede tener muchos usuarios
 Project.belongsToMany(User, {
   through: UserProject,
   foreignKey: "proyecto_id",

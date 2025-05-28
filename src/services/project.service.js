@@ -1,8 +1,10 @@
+const { Op } = require("sequelize"); // ← Necesario para filtros con LIKE
 const ROLES = require("../utils/constants");
 const Project = require("../models/project.model");
 const User = require("../models/user.model");
 const UserProject = require("../models/userProject.model");
 
+// Crear un nuevo proyecto
 exports.createProject = async (data) => {
   try {
     const { nombre, descripcion, administrador_id } = data;
@@ -13,25 +15,55 @@ exports.createProject = async (data) => {
     });
     return newProject;
   } catch (error) {
-    console.log(error)
+    console.log(error);
     throw error;
   }
 };
 
-exports.getProjects = async () => {
+// Obtener proyectos: Todos si es ADMIN, solo asignados si es USER
+exports.getProjects = async (user_id, rol_id, filters = {}) => {
   try {
-    const projects = await Project.findAll({
-      include: {
-        model: User,
-        attributes: ["nombre"],
-      },
-    });
-    return projects;
+    const { nombre, descripcion } = filters;
+
+    if (rol_id === ROLES.ADMIN) {
+      const whereClause = {};
+
+      if (nombre) {
+        whereClause.nombre = { [Op.iLike]: `%${nombre}%` };
+      }
+
+      if (descripcion) {
+        whereClause.descripcion = { [Op.iLike]: `%${descripcion}%` };
+      }
+
+      return await Project.findAll({
+        where: whereClause,
+        include: {
+          model: User,
+          attributes: ["nombre"],
+        },
+      });
+    } else {
+      // Usuario normal: solo sus proyectos asignados (sin filtros)
+      const user = await User.findByPk(user_id, {
+        include: {
+          model: Project,
+          as: "proyectos", // relación definida en userProject.model.js
+          include: {
+            model: User,
+            attributes: ["nombre"],
+          },
+        },
+      });
+
+      return user?.proyectos || [];
+    }
   } catch (error) {
     throw error;
   }
 };
 
+// Obtener un solo proyecto por su ID
 exports.getProject = async (id) => {
   try {
     const project = await Project.findByPk(id, {
@@ -46,13 +78,11 @@ exports.getProject = async (id) => {
   }
 };
 
-// actualiza un proyecto
+// Actualizar un proyecto
 exports.updateProject = async (id, data, admin_from_token) => {
   try {
     const project = await Project.findByPk(id);
-    if (!project) {
-      throw new Error("Proyecto no encontrado");
-    }
+    if (!project) throw new Error("Proyecto no encontrado");
 
     if (project.administrador_id !== admin_from_token) {
       throw new Error("No tienes permisos para actualizar este proyecto");
@@ -65,13 +95,11 @@ exports.updateProject = async (id, data, admin_from_token) => {
   }
 };
 
-// elimina un proyecto
+// Eliminar un proyecto
 exports.deleteProject = async (id, admin_from_token) => {
   try {
     const project = await Project.findByPk(id);
-    if (!project) {
-      throw new Error("Proyecto no encontrado");
-    }
+    if (!project) throw new Error("Proyecto no encontrado");
 
     if (project.administrador_id !== admin_from_token) {
       throw new Error("No tienes permisos para eliminar este proyecto");
@@ -84,25 +112,21 @@ exports.deleteProject = async (id, admin_from_token) => {
   }
 };
 
-// asigna un usuario a un proyecto
+// Asignar un usuario a un proyecto
 exports.assignUserToProject = async (proyecto_id, usuario_id) => {
   try {
     const project = await Project.findByPk(proyecto_id);
-    if (!project) {
-      throw new Error("Proyecto no encontrado");
-    }
+    if (!project) throw new Error("Proyecto no encontrado");
 
     const user = await User.findByPk(usuario_id);
-    if (!user) {
-      throw new Error("Usuario no encontrado");
-    }
+    if (!user) throw new Error("Usuario no encontrado");
 
     const userProject = await UserProject.findOne({
       where: { proyecto_id, usuario_id },
     });
 
     if (userProject) {
-      throw new Error("Este usuario ya esta asignado a este proyecto");
+      throw new Error("Este usuario ya está asignado a este proyecto");
     }
 
     const newUserProject = await UserProject.create({
@@ -116,25 +140,21 @@ exports.assignUserToProject = async (proyecto_id, usuario_id) => {
   }
 };
 
-// desasigna un usuario de un proyecto
+// Desasignar un usuario de un proyecto
 exports.unassignUserFromProject = async (proyecto_id, usuario_id) => {
   try {
     const project = await Project.findByPk(proyecto_id);
-    if (!project) {
-      throw new Error("Proyecto no encontrado");
-    }
+    if (!project) throw new Error("Proyecto no encontrado");
 
     const user = await User.findByPk(usuario_id);
-    if (!user) {
-      throw new Error("Usuario no encontrado");
-    }
+    if (!user) throw new Error("Usuario no encontrado");
 
     const userProject = await UserProject.findOne({
       where: { proyecto_id, usuario_id },
     });
 
     if (!userProject) {
-      throw new Error("Este usuario no esta asignado a este proyecto");
+      throw new Error("Este usuario no está asignado a este proyecto");
     }
 
     await userProject.destroy();
@@ -142,3 +162,4 @@ exports.unassignUserFromProject = async (proyecto_id, usuario_id) => {
     throw error;
   }
 };
+
