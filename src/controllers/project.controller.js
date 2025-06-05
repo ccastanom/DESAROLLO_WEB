@@ -9,7 +9,7 @@ exports.getProjects = async (req, res) => {
     const user_id = req.user.id;
     const rol_id = req.user.rol_id;
     const filters = req.query;
-
+    console.log("estoy entrando al controlador")
     const projects = await projectService.getProjects(user_id, rol_id, filters);
 
     res.status(200).json({

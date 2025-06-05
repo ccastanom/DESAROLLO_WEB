@@ -15,7 +15,7 @@ const errorHandler = require("../middlewares/error.middleware");
 router.get(
   "/projects",
   authenticateToken,
-  checkRole([ROLES.ADMIN]),
+  checkRole([ROLES.ADMIN, ROLES.USER]),
   projectController.getProjects
 );
 

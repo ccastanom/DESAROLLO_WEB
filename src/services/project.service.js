@@ -22,7 +22,8 @@ exports.createProject = async (data) => {
 
 // Obtener proyectos: Todos si es ADMIN, solo asignados si es USER
 
-exports.getProjects = async (user_id, rol_id, filters = {}) => {
+exports.getProjects = async (user_id, rol_id, filters = {}) => { 
+  console.log("Entrando al metodo")
   try {
     const { nombre, descripcion } = filters;
 
@@ -44,6 +45,8 @@ exports.getProjects = async (user_id, rol_id, filters = {}) => {
         },
       });
     } else {
+
+      console.log("entre aquí")
       // ✅ Usuario ve solo proyectos asignados
       const userProjects = await UserProject.findAll({
         where: { usuario_id: user_id },
