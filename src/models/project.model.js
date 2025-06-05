@@ -1,41 +1,47 @@
-const { DataTypes } = require("sequelize"); // Importamos los tipos de datos de Sequelize
-const sequelize = require("../config/database"); // Importamos la instancia de conexión a la base de datos
+const { DataTypes } = require("sequelize"); // Tipos de datos Sequelize
+const sequelize = require("../config/database"); // Conexión a la base de datos
 const User = require("./user.model");
 
-// Definición del modelo "Project" que representa la tabla "proyectos"
+// Definición del modelo "Project"
 const Project = sequelize.define(
-  "proyectos", // Nombre de la tabla en la base de datos
+  "proyectos", // ✅ Nombre del modelo (singular y PascalCase, requerido por Sequelize)
   {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true }, /* / Define el campo como un número entero, indica que es la clave primaria de la tabla  y el valor se incrementa automáticamente*/
-    nombre: { type: DataTypes.STRING, allowNull: false },
-    descripcion: { type: DataTypes.TEXT },
-    fecha_creacion: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    nombre: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    descripcion: {
+      type: DataTypes.TEXT
+    },
+    fecha_creacion: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    },
     administrador_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: { model: "usuarios", key: "id" }, // Establece la relación con la tabla "usuarios"
-    },
+      references: {
+        model: "usuarios", // nombre real de la tabla referenciada
+        key: "id"
+      }
+    }
   },
   {
-    timestamps: false, // Desactiva los timestamps automáticos (createdAt, updatedAt)
-    tableName: "proyectos", // Me especifica el nombre de la tabla en la base de datos
+    timestamps: false,
+    tableName: "proyectos", // nombre real de la tabla en la base de datos
     hooks: {
-      afterCreate: (proyect, options) => { // Se ejecuta después de crear un proyecto
+      afterCreate: (proyect) => {
         if (proyect.fecha_creacion) {
           proyect.fecha_creacion.setHours(proyect.fecha_creacion.getHours() - 5);
         }
-      },
-    },
+      }
+    }
   }
 );
 
-Project.belongsTo(User, {
-  foreignKey: "administrador_id",
-});
-
-User.hasMany(Project, {
-  foreignKey: "administrador_id",
-  as: "proyectos_administrados",
-});
-
-module.exports = Project; // Exporta el modelo para su uso en otras partes del código
+module.exports = Project;

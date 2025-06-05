@@ -9,6 +9,7 @@ exports.getProjects = async (req, res) => {
     const user_id = req.user.id;
     const rol_id = req.user.rol_id;
     const filters = req.query;
+
     const projects = await projectService.getProjects(user_id, rol_id, filters);
 
     res.status(200).json({
@@ -24,6 +25,8 @@ exports.getProjects = async (req, res) => {
 
 //  Crear nuevo proyecto
 exports.createProject = async (req, res) => {
+  console.log("📥 Creando proyecto con:", req.body);
+
   try {
     const { nombre, descripcion, administrador_id } = req.body;
     const newProject = await projectService.createProject({

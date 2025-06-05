@@ -1,4 +1,4 @@
-const { Op } = require("sequelize"); // ← Necesario para filtros con LIKE
+const { Op, where } = require("sequelize"); // ← Necesario para filtros con LIKE
 const ROLES = require("../utils/constants");
 const Project = require("../models/project.model");
 const User = require("../models/user.model");
@@ -21,21 +21,21 @@ exports.createProject = async (data) => {
 };
 
 // Obtener proyectos: Todos si es ADMIN, solo asignados si es USER
+
 exports.getProjects = async (user_id, rol_id, filters = {}) => {
   try {
     const { nombre, descripcion } = filters;
 
+    const whereClause = {};
+    if (nombre) {
+      whereClause.nombre = { [Op.iLike]: `%${nombre}%` };
+    }
+    if (descripcion) {
+      whereClause.descripcion = { [Op.iLike]: `%${descripcion}%` };
+    }
+
     if (rol_id === ROLES.ADMIN) {
-      const whereClause = {};
-
-      if (nombre) {
-        whereClause.nombre = { [Op.iLike]: `%${nombre}%` };
-      }
-
-      if (descripcion) {
-        whereClause.descripcion = { [Op.iLike]: `%${descripcion}%` };
-      }
-
+      // ✅ Admin ve todos los proyectos
       return await Project.findAll({
         where: whereClause,
         include: {
@@ -44,24 +44,40 @@ exports.getProjects = async (user_id, rol_id, filters = {}) => {
         },
       });
     } else {
-      // Usuario normal: solo sus proyectos asignados (sin filtros)
-      const user = await User.findByPk(user_id, {
-        include: {
-          model: Project,
-          as: "proyectos", // relación definida en userProject.model.js
-          include: {
-            model: User,
-            attributes: ["nombre"],
-          },
-        },
+      // ✅ Usuario ve solo proyectos asignados
+      const userProjects = await UserProject.findAll({
+        where: { usuario_id: user_id },
+        attributes: ["proyecto_id"],
       });
 
-      return user?.proyectos || [];
+      const projectIds = userProjects.map(up => up.proyecto_id);
+
+      if (!projectIds.length) return [];
+
+      return await Project.findAll({
+        where: {
+          ...whereClause,
+          id: projectIds
+        },
+        include: [
+          {
+            model: User,
+            as: "usuarios",
+            attributes: ["id", "nombre"],
+            through: { attributes: [] }
+          }
+        ]
+      });
     }
   } catch (error) {
+    console.error("🔥 Error en getProjects:", error.message);
     throw error;
   }
 };
+
+
+
+
 
 // Obtener un solo proyecto por su ID
 exports.getProject = async (id) => {
@@ -69,7 +85,7 @@ exports.getProject = async (id) => {
     const project = await Project.findByPk(id, {
       include: {
         model: User,
-        attributes: ["nombre"],
+        attributes: ["id", "nombre"],
       },
     });
     return project;

@@ -31,6 +31,8 @@ const checkRole = (roles) => {
     return ( req, res, next) => {
         const { rol_id} = req.user;
 
+        console.log('🛂 checkRole ejecutado - rol recibido:', rol_id); // 👈 agrega esto
+
         if (!roles.includes(rol_id)) {
             return res.status(403).json({ message: "Acceso denegado, no tienes permisos para realizar esta accion"});
         }

@@ -1,9 +1,11 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
+const Project = require("./project.model");
+const UserProject = require("./userProject.model");
 
-// Definición del modelo "User" que representa la tabla "usuarios" en la base de datos
+// Definición del modelo "User" (Sequelize usa este como clase, no como tabla directamente)
 const User = sequelize.define(
-  "usuarios", // Nombre de la tabla en la base de datos
+  "usuarios", // ✅ nombre del modelo (singular)
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     nombre: { type: DataTypes.STRING, allowNull: false },
@@ -16,14 +18,42 @@ const User = sequelize.define(
     },
     administrador_id: {
       type: DataTypes.INTEGER,
-      allowNull: true, //allowNull: true, Puede ser nulo, ya que no todos los usuarios tienen un administrador
-      references: { model: "usuarios", key: "id", onDelete: "SET NULL" }, //onDelete: "SET NULL", si el administrador es eliminado, este campo se establece en NULL
+      allowNull: true,
+      references: {
+        model: "usuarios", // nombre real de la tabla referenciada
+        key: "id",
+        onDelete: "SET NULL" // buena práctica
+      },
     },
   },
   {
-    timestamps: false, // Desactiva los campos automáticos "createdAt" y "updatedAt"
-    tableName: "usuarios", // Especifica el nombre de la tabla en la base de datos
+    tableName: "usuarios", // ✅ nombre real de la tabla en la base de datos
+    timestamps: false,
   }
 );
 
+// Relaciones muchos a muchos con proyectos
+User.belongsToMany(Project, {
+  through: UserProject,
+  as: "proyectos", // alias para acceder desde el usuario
+  foreignKey: "usuario_id",
+});
+
+Project.belongsToMany(User, {
+  through: UserProject,
+  foreignKey: "proyecto_id",
+  as: "usuarios",
+});
+
+// Relación de administrador a sus proyectos (uno a muchos)
+User.hasMany(Project, {
+  foreignKey: "administrador_id",
+  as: "proyectos_administrados",
+});
+
+Project.belongsTo(User, {
+  foreignKey: "administrador_id",
+});
+
 module.exports = User;
+
