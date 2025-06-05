@@ -88,7 +88,9 @@ exports.getProject = async (id) => {
     const project = await Project.findByPk(id, {
       include: {
         model: User,
+        as:"usuarios", // Alias que declare en belongsToMany
         attributes: ["id", "nombre"],
+        through: { attributes: [] } // Oculta columnas intermedias
       },
     });
     return project;
